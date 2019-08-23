@@ -14,9 +14,11 @@ VignetteBuilder: knitr
 Suggests: testthat,
           knitr,
           rmarkdown,
+          readr,
           dplyr,
           colorRamps,
           ggplot2,
           gridExtra,
-          latticeExtra
+          latticeExtra,
+          MASS
 Imports: numDeriv

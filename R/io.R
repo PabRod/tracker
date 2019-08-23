@@ -11,7 +11,8 @@
 #' @seealso \code{\link{clean}}
 #'
 import <- function(path) {
-  raw <- read_csv(path)
+  raw <- readr::read_csv(path)
+  data <- clean(raw)
 }
 
 #' Clean and filter the raw input from import
@@ -35,5 +36,6 @@ clean <- function(raw) {
   # Remove artifacts
   data <- dplyr::filter(data, time > 0) # Drop null times
   data <- data[complete.cases(data), ] # Drop nans
+  data <- dplyr::filter(data, (x > 0) & (y > 0)) # Drop center
 }
 
