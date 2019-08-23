@@ -2,6 +2,6 @@
 
 export(accel)
 export(append_dynamics)
-export(clean)
 export(import)
+export(plot_positions)
 export(speed)

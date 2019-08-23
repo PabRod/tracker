@@ -2,18 +2,18 @@
 % Please edit documentation in R/analysis.R
 \name{append_dynamics}
 \alias{append_dynamics}
-\title{Return speeds}
+\title{Returns a dataframe with extra columns with dynamical information}
 \usage{
-append_dynamics(data)
+append_dynamics(data_loc)
 }
 \arguments{
-\item{data}{The clean data}
+\item{data_loc}{The clean data from a given location}
 }
 \value{
 A data frame including the speeds and accelerations
 }
 \description{
-Return speeds
+Returns a dataframe with extra columns with dynamical information
 }
 \seealso{
 \code{\link{speed}, \link{accel}}

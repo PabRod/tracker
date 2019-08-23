@@ -1,6 +1,6 @@
 # Analysis functions
 
-#' Return speeds
+#' Returns a dataframe with extra columns with dynamical information
 #'
 #' @param data_loc The clean data from a given location
 #'

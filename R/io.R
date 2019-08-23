@@ -5,7 +5,7 @@
 #'
 #' @param path The path to the .csv file
 #'
-#' @return A raw dataframe
+#' @return A clean dataframe
 #' @export
 #'
 #' @seealso \code{\link{clean}}
@@ -20,7 +20,6 @@ import <- function(path) {
 #' @param raw The raw data
 #'
 #' @return The clean data
-#' @export
 #'
 #'
 #' @seealso \code{\link{import}}

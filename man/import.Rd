@@ -10,7 +10,7 @@ import(path)
 \item{path}{The path to the .csv file}
 }
 \value{
-A raw dataframe
+A clean dataframe
 }
 \description{
 Import
