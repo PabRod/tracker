@@ -10,10 +10,16 @@
 #' @seealso \code{\link{speed}, \link{accel}}
 #'
 append_dynamics <- function(data_loc) {
+  # Directional dynamical data
   speeds <- speed(data_loc$time, data_loc$x, data_loc$y)
   accels <- accel(data_loc$time, data_loc$x, data_loc$y)
 
-  data <- cbind(data_loc, speeds, accels)
+  # Absolute dynamical data
+  aspeed <- sqrt(speeds$vx^2 + speeds$vy^2)
+  aaccel <- sqrt(accels$ax^2 + accels$ay^2)
+
+  # Paste everything together
+  data <- cbind(data_loc, speeds, aspeed, accels, aaccel)
 }
 
 #' Return speeds
