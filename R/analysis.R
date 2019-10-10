@@ -83,3 +83,36 @@ accel <- function(t, x, y) {
 filter_data <- function(input_data, filter_location){
   input_data %>% filter(location == filter_location) 
 }
+
+
+#' Returns a dataframe with extra columns with polar coordinates
+#'
+#' @param data_loc The clean data from a given location
+#'
+#' @return A data frame including the polar coordinates
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}}
+#'
+append_polar_coordinates <- function(data_loc) {
+  
+  # Calculate min and max of x and y coordinates
+  max_x <- max(data_loc$x)
+  min_x <- min(data_loc$x)
+  max_y <- max(data_loc$y)
+  min_y <- min(data_loc$y)
+  
+  # Calculate center of the petridish
+  r_0_x <- mean(c(max_x, min_x))
+  r_0_y <- mean(c(max_y, min_y))
+  
+  # Correct the coordinates according to the center of the petridish
+  x_r <- data_loc$x-r_0_x
+  y_r <- data_loc$y-r_0_y
+  
+  # Calculate the polar coordinates
+  r <- sqrt(x_r^2+y_r^2)
+  
+  # Paste everything together
+  data <- cbind(data_loc, x_r, y_r, r)
+}
