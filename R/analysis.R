@@ -72,6 +72,14 @@ accel <- function(t, x, y) {
 }
 
 
+#' Returns a dataframe with rows filtered
+#'
+#' @param input_data The clean data from all locations
+#' @param filter_location The location on which the data will be filtered
+#'
+#' @return A data frame including only the rows belonging to one location
+#' @export
+#'
 filter_data <- function(input_data, filter_location){
   input_data %>% filter(location == filter_location) 
 }
