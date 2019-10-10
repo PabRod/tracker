@@ -71,3 +71,7 @@ accel <- function(t, x, y) {
   accels <- data.frame(ax, ay)
 }
 
+
+filter_data <- function(input_data, filter_location){
+  input_data %>% filter(location == filter_location) 
+}
