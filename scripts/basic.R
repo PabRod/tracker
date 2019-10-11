@@ -7,10 +7,22 @@ sapply(list.files('R', full.names = T), source)
 
 # Import data
 data <- import('./data/data.csv')
-data <- filter(data, location == 'Loc01')
-data <- append_dynamics(data)
+
+# Apply next steps to all locations
+list_locations <- as.list(unique(data$location))
+# Filter on location
+data <- lapply(list_locations, function(x){ filter_data(data, filter_location = x) })
+# Append dynamics to all locations
+data <- lapply(data, function(x){ append_dynamics(x) })
+## Append polar coordinates and make histogram of radius distribution
+data <- lapply(data, function(x){ append_polar_coordinates(x) })
 
 # Plot results
-plot_positions(data, 'scatter')
+lapply(data, function(x) {plot_positions(x, 'scatter')})
+lapply(data, function(x) {plot_positions(x, 'density')})
+lapply(data, function(x) {hist(x$r, breaks = 50, freq = FALSE)})
+lapply(data, function(x) {hist(x$th, breaks = 50, freq = FALSE)})
 
-plot_positions(data, 'density')
+# Calculate the mean speed and acceleration
+lapply(data, function(x) {mean(x$aspeed)})
+lapply(data, function(x) {mean(x$aaccel)})
