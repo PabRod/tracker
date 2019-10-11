@@ -12,6 +12,8 @@ data <- import('./data/data.csv')
 list_locations <- as.list(unique(data$location))
 # Filter on location
 data <- lapply(list_locations, function(x){ filter_data(data, filter_location = x) })
+# Append timebins
+data <- lapply(data, function(x){ append_time_bins(x) })
 # Append dynamics to all locations
 data <- lapply(data, function(x){ append_dynamics(x) })
 ## Append polar coordinates and make histogram of radius distribution

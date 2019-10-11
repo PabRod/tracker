@@ -120,3 +120,19 @@ append_polar_coordinates <- function(data_loc) {
   # Paste everything together
   data <- cbind(data_loc, x_r, y_r, r, th, d)
 }
+
+#' Returns a dataframe with an extra column containing the timebin
+#'
+#' @param data_loc The clean data from a given location
+#'
+#' @return A data frame including the timebin
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}}
+#'
+append_time_bins <- function(data_loc) {
+  data_loc$time_bin <- ifelse(data_loc$time < 1.2e8, 1, 
+                              ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2, 
+                                     ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
+  return(data_loc)
+}
