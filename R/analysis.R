@@ -112,7 +112,8 @@ append_polar_coordinates <- function(data_loc) {
   
   # Calculate the polar coordinates
   r <- sqrt(x_r^2+y_r^2)
+  th <- atan2(y = y_r, x = x_r)
   
   # Paste everything together
-  data <- cbind(data_loc, x_r, y_r, r)
+  data <- cbind(data_loc, x_r, y_r, r, th)
 }
