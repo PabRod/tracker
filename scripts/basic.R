@@ -22,3 +22,7 @@ lapply(data, function(x) {plot_positions(x, 'scatter')})
 lapply(data, function(x) {plot_positions(x, 'density')})
 lapply(data, function(x) {hist(x$r, breaks = 50, freq = FALSE)})
 lapply(data, function(x) {hist(x$th, breaks = 50, freq = FALSE)})
+
+# Calculate the mean speed and acceleration
+lapply(data, function(x) {mean(x$aspeed)})
+lapply(data, function(x) {mean(x$aaccel)})

@@ -114,6 +114,9 @@ append_polar_coordinates <- function(data_loc) {
   r <- sqrt(x_r^2+y_r^2)
   th <- atan2(y = y_r, x = x_r)
   
+  # Calculate the cumulative distance traveled
+  d <- cumsum(r)
+  
   # Paste everything together
-  data <- cbind(data_loc, x_r, y_r, r, th)
+  data <- cbind(data_loc, x_r, y_r, r, th, d)
 }
