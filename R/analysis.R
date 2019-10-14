@@ -138,7 +138,7 @@ append_time_bins <- function(data_loc) {
 }
 
 
-#' Returns a dataframe with an extra column containing the cosmnr
+#' Returns a dataframe with extra columns indicating experimental information
 #'
 #' @param data_loc The clean data from a given location
 #' @param file_name The original name of the file
@@ -148,16 +148,26 @@ append_time_bins <- function(data_loc) {
 #'
 #' @seealso \code{\link{speed}, \link{accel}}
 #'
-append_cosm_nr <- function(data_loc, file_name){
-  # Extract cosm nr from filename
+append_exp_info <- function(data_loc, file_name){
+  # Split filename so that experimental information can be extracted
   file_name <- strsplit(file_name, ' ')
+  # Extract cosm numbers
   cosm_nrs <- unlist(file_name)[6]
   cosm_nrs <- strsplit(cosm_nrs, '&')
   cosm_nrs <- as.integer(unlist(cosm_nrs))
+  # Extract species
+  test_species <- unlist(file_name)[3]
+  # Extract test date
+  test_date <- unlist(strsplit(unlist(file_name)[1], '/'))[2]
   
   # Convert location to numeric vector
   data_loc$location_temp <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
+  # Add cosm nr to dataframe
   data_loc$cosm_nr <- ifelse(data_loc$location_temp <= 10, cosm_nrs[1], cosm_nrs[2])
+  # Add species to dataframe
+  data_loc$test_species <- test_species
+  # Add test date to dataframe
+  data_loc$test_date <- test_date
   
   # Return extended data
   return(data_loc)
