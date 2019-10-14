@@ -39,3 +39,8 @@ for(file.nr in 1:length(files)){
 
 # Combine all data together
 output_data <- do.call('rbind', output)
+
+# Load treatment data
+treatments <- read.csv('data/treatments.csv')
+# Add treatment data to rest of data
+output_data <- merge(x = output_data, y = treatments, by.x = "cosm_nr", by.y = "Cosm")
