@@ -136,3 +136,29 @@ append_time_bins <- function(data_loc) {
                                      ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
   return(data_loc)
 }
+
+
+#' Returns a dataframe with an extra column containing the cosmnr
+#'
+#' @param data_loc The clean data from a given location
+#' @param file_name The original name of the file
+#'
+#' @return A data frame including the cosmnr
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}}
+#'
+append_cosm_nr <- function(data_loc, file_name){
+  # Extract cosm nr from filename
+  file_name <- strsplit(file_name, ' ')
+  cosm_nrs <- unlist(file_name)[6]
+  cosm_nrs <- strsplit(cosm_nrs, '&')
+  cosm_nrs <- as.integer(unlist(cosm_nrs))
+  
+  # Convert location to numeric vector
+  data_loc$location_temp <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
+  data_loc$cosm_nr <- ifelse(data_loc$location_temp <= 10, cosm_nrs[1], cosm_nrs[2])
+  
+  # Return extended data
+  return(data_loc)
+}
