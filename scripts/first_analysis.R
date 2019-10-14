@@ -9,7 +9,8 @@ library(MASS)
 sapply(list.files('R', full.names = T), source)
 
 # List files
-files <- list.files('data/2019-07-31', full.names = T)
+date <- '2019-07-31'
+files <- list.files(paste('data/', date, sep = ''), full.names = T)
 files <- files[grep('raw_0001.csv', files, value = F)]
 
 # Create empty list to collect output data
@@ -39,8 +40,10 @@ for(file.nr in 1:length(files)){
 
 # Combine all data together
 output_data <- do.call('rbind', output)
-
 # Load treatment data
 treatments <- read.csv('data/treatments.csv')
 # Add treatment data to rest of data
 output_data <- merge(x = output_data, y = treatments, by.x = "cosm_nr", by.y = "Cosm")
+
+# Save data
+save(output_data, file = paste('output/', date, '.Rda', sep = ''))
