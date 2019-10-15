@@ -115,7 +115,7 @@ append_polar_coordinates <- function(data_loc) {
   th <- atan2(y = y_r, x = x_r)
   
   # Calculate the cumulative distance traveled
-  d <- cumsum(r)
+  d <- cumsum(r) # TODO check this function
   
   # Paste everything together
   data <- cbind(data_loc, x_r, y_r, r, th, d)
@@ -134,6 +134,8 @@ append_time_bins <- function(data_loc) {
   data_loc$time_bin <- ifelse(data_loc$time < 1.2e8, 1, 
                               ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2, 
                                      ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
+  # Convert microseconds to seconds
+  data_loc$time <- data_loc$time/1e6
   return(data_loc)
 }
 
