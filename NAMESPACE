@@ -2,6 +2,10 @@
 
 export(accel)
 export(append_dynamics)
+export(append_exp_info)
+export(append_polar_coordinates)
+export(append_time_bins)
+export(filter_data)
 export(import)
 export(plot_positions)
 export(speed)
