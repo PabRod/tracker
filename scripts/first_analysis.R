@@ -34,10 +34,10 @@ for(test.date in 1:length(test_dates)){
     data <- lapply(data, function(x){ append_time_bins(x) }) # TODO only for Gammarus
     # Append dynamics to all locations
     data <- lapply(data, function(x){ append_dynamics(x) })
+    # Add experimental data
+    data <- lapply(data, function(x){ append_exp_info(x, files[[file.nr]]) })
     # Append polar coordinates and make histogram of radius distribution
     data <- lapply(data, function(x){ append_polar_coordinates(x) })
-    # Add cosm nr to data
-    data <- lapply(data, function(x){ append_exp_info(x, files[[file.nr]]) })
     # Collect all data together
     data <- do.call('rbind', data)
     # Store in output list

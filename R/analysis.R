@@ -96,15 +96,26 @@ filter_data <- function(input_data, filter_location){
 #'
 append_polar_coordinates <- function(data_loc) {
   
-  # Calculate min and max of x and y coordinates
-  max_x <- max(data_loc$x)
-  min_x <- min(data_loc$x)
-  max_y <- max(data_loc$y)
-  min_y <- min(data_loc$y)
+  # Load data on arenas
+  # Load coordinates of gammarus or snail protocol
+  arenas <- read.csv(paste('data/arenas_', data_loc$test_species[1], '.csv', sep = ''))
+  # Convert scale
+  scale_value <- 0.46 # This value is extracted from the protocol
+  arenas[2:5] <- apply(arenas[2:5], 2, function(x) x*scale_value)
+  # Merge with other data
+  data_loc <- merge(data_loc, arenas, by.x = 'location_temp', by.y = 'id')
+  
+  # # Calculate min and max of x and y coordinates
+  # max_x <- max(data_loc$x)
+  # min_x <- min(data_loc$x)
+  # max_y <- max(data_loc$y)
+  # min_y <- min(data_loc$y)
   
   # Calculate center of the petridish
-  r_0_x <- mean(c(max_x, min_x))
-  r_0_y <- mean(c(max_y, min_y))
+  #r_0_x <- mean(c(max_x, min_x))
+  r_0_x <- data_loc$cx[1]
+  #r_0_y <- mean(c(max_y, min_y))
+  r_0_y <- data_loc$cy[1]
   
   # Correct the coordinates according to the center of the petridish
   x_r <- data_loc$x-r_0_x
