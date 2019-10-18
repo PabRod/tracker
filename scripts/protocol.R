@@ -2,7 +2,11 @@
 library(plotrix)
 
 # Load coordinates of gammarus or snail protocol
-test <- read.csv('data/arenas_snails.csv')
+test <- read.csv('data/arenas_snail.csv')
+
+# Convert scale
+scale_value <- 0.46
+test$cx <- test$cx*scale_value
 
 # Determine the x- and y-axis limits
 min_x <- min(test$cx)-max(c(test$rx, test$ry))
