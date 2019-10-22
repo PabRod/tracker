@@ -17,9 +17,10 @@ append_dynamics <- function(data_loc) {
   # Absolute dynamical data
   aspeed <- sqrt(speeds$vx^2 + speeds$vy^2)
   aaccel <- sqrt(accels$ax^2 + accels$ay^2)
+  curv_radius <- curvature(data_loc$time, data_loc$x, data_loc$y)
 
   # Paste everything together
-  data <- cbind(data_loc, speeds, aspeed, accels, aaccel)
+  data <- cbind(data_loc, speeds, aspeed, accels, aaccel, curv_radius)
 }
 
 #' Return speeds
@@ -71,6 +72,27 @@ accel <- function(t, x, y) {
   accels <- data.frame(ax, ay)
 }
 
+#' Return curvatures
+#'
+#' @param t The times vector
+#' @param x The x positions
+#' @param y The y positions
+#'
+#' @return The local radii of curvature
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}}
+#'
+curvature <- function(t, x, y) {
+  # First get speeds and accelerations
+  speeds <- speed(t, x, y)
+  aspeed <- sqrt(speeds$vx^2 + speeds$vy^2)
+  accels <- accel(t, x, y)
+
+  # Calculate the local radius of curvature
+  cross_prod <- speeds$vx*accels$ay - speeds$vy*accels$ax
+  curv_radius <- abs(aspeed^3)/abs(cross_prod)
+}
 
 #' Returns a dataframe with rows filtered
 #'

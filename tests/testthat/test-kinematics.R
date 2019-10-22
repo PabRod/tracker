@@ -45,3 +45,20 @@ test_that('Acceleration',
             expect_true(max(abs(vs_estimated$vy - v_0[2])) > 0.0)
           }
 )
+
+test_that('Curvature',
+          {
+            # Generate circular movement of radius 2
+            R_expected <- 2
+            t <- seq(0, 1, by=0.05)
+            x <- R_expected*cos(t)
+            y <- R_expected*sin(t)
+
+            # Estimate the speeds from the generated data
+            curvs_estimated <- curvature(t, x, y)
+
+            # Check that the estimates are correct
+            tol <- 0.01
+            expect_true(max(abs(curvs_estimated - R_expected)) < tol)
+          }
+)
