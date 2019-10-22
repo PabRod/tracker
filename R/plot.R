@@ -53,16 +53,17 @@ plot_heatmap <- function(test_date, chemical, timebin, exp_dur){
   data$combined_group <- interaction(data$group, data$Treatment_conc)
   
   # Summarise by group
-  summarised_data <- data %>% group_by(combined_group) %>%
-    summarise(mean.speed = mean(aspeed),
+  data_summarised <- data %>% group_by(combined_group) %>%
+    summarise(avaspeed = mean(aspeed),
+              sdaspeed = sd(aspeed),
               group = mean(group),
               Treatment_conc = mean(Treatment_conc))
   
   # Convert into wide format, using 10s timebins as columns
-  summarised_data <- spread(summarised_data[2:4], group, mean.speed)
+  data_summarised <- spread(data_summarised[c(2,4,5)], group, avaspeed)
   
   # Plot heatmap
-  heatmap(as.matrix(summarised_data[-1]), Colv = NA, Rowv = NA, scale = 'none',
+  heatmap(as.matrix(data_summarised[-1]), Colv = NA, Rowv = NA, scale = 'none',
           col = rev(heat.colors(256)))
 }
 

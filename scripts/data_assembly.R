@@ -23,7 +23,7 @@ for(test.date in 1:length(test_dates)){
   output <- list(0)
   
   # Loop through all files
-  for(file.nr in 2:length(files)){
+  for(file.nr in 1:length(files)){
     # Import data
     data <- import(files[[file.nr]])
     # Apply next steps to all locations, so make list of locations

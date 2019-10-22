@@ -18,3 +18,5 @@ plot_heatmap(test_date = '2019-07-31', chemical = 'SMX', timebin = 10, exp_dur =
 # Make heatmaps for Potamopyrgus
 plot_heatmap(test_date = '2019-08-01', chemical = 'FLU', timebin = 10, exp_dur = 240)
 plot_heatmap(test_date = '2019-08-01', chemical = 'SMX', timebin = 10, exp_dur = 240)
+
+plot_velocity(test_date = '2019-07-31', chemical = 'FLU', timebin = 10, exp_dur = 480)

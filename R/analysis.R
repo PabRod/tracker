@@ -177,6 +177,10 @@ append_exp_info <- function(data_loc, file_name){
   data_loc$location_temp <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
   # Add cosm nr to dataframe
   data_loc$cosm_nr <- ifelse(data_loc$location_temp <= 10, cosm_nrs[1], cosm_nrs[2])
+  ## Add animal nr per cosm
+  #data_loc$location_temp <- ifelse(data_loc$location_temp <= 10, seq(1,10,1), seq(1,10,1))
+  data_loc$location_temp <- ifelse(data_loc$location_temp <= 10, data_loc$location_temp,
+                                   (data_loc$location_temp - 10))
   # Add species to dataframe
   data_loc$test_species <- test_species
   # Add test date to dataframe
