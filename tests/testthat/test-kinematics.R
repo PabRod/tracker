@@ -46,11 +46,11 @@ test_that('Acceleration',
           }
 )
 
-test_that('Curvature',
+test_that('Curvature (circle)',
           {
             # Generate circular movement of radius 2
             R_expected <- 2
-            t <- seq(0, 1, by=0.05)
+            t <- seq(0, 2*pi, by=0.05)
             x <- R_expected*cos(t)
             y <- R_expected*sin(t)
 
@@ -59,6 +59,28 @@ test_that('Curvature',
 
             # Check that the estimates are correct
             tol <- 0.01
+            expect_true(max(abs(curvs_estimated - R_expected)) < tol)
+          }
+)
+
+test_that('Curvature (ellipse)',
+          {
+            # Generate an elliptic movement with parameters a and b
+            a <- 2
+            b <- 3
+
+            t <- seq(0, 2*pi, by=0.05)
+            x <- a*cos(t)
+            y <- b*sin(t)
+
+            # The local curvature radii can be calculated analytically
+            R_expected <- (a^2*(sin(t))^2 + b^2*(cos(t))^2)^(3/2)/(a*b)
+
+            # Estimate the speeds from the generated data
+            curvs_estimated <- curvature(t, x, y)
+
+            # Check that the estimates are correct
+            tol <- 1e-2
             expect_true(max(abs(curvs_estimated - R_expected)) < tol)
           }
 )
