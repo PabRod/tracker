@@ -9,15 +9,19 @@ library(MASS)
 sapply(list.files('R', full.names = T), source)
 
 # Create list of test dates
-test_dates <- c('2019-07-31', '2019-08-01')
+test_dates <- c('2019-07-31', '2019-08-01', '2019-08-08', '2019-08-15', '2019-08-15')
+test_species <- c('Gammarus', 'snail', 'Gammarus', 'Gammarus', 'snail')
 
 # Loop through test dates
-for(test.date in 1:length(test_dates)){
+for(n in 1:length(test_dates)){
   
   # List files
-  date <- test_dates[[test.date]]
-  files <- list.files(paste('data/', date, sep = ''), full.names = T)
-  files <- files[grep('raw_0001.csv', files, value = F)]
+  date <- test_dates[[n]]
+  species <- test_species[n]
+  files <- list.files('data/raw data', full.names = T)
+  files <- files[grep(date, files, value = F)]
+  files <- files[grep(species, files, value = F)]
+  #files <- files[grep('raw_0001.csv', files, value = F)]
   
   # Create empty list to collect output data
   output <- list(0)
@@ -52,5 +56,5 @@ for(test.date in 1:length(test_dates)){
   output_data <- merge(x = output_data, y = treatments, by.x = "cosm_nr", by.y = "Cosm")
   
   # Save data
-  save(output_data, file = paste('output/', date, '.Rda', sep = ''))
+  save(output_data, file = paste('output/', species, '_', date, '.Rda', sep = ''))
 }
