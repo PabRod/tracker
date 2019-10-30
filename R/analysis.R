@@ -125,7 +125,7 @@ append_polar_coordinates <- function(data_loc) {
   scale_value <- 0.46 # This value is extracted from the protocol
   arenas[2:5] <- apply(arenas[2:5], 2, function(x) x*scale_value)
   # Merge with other data
-  data_loc <- merge(data_loc, arenas, by.x = 'location_temp', by.y = 'id')
+  data_loc <- merge(data_loc, arenas, by.x = 'ind', by.y = 'id')
   
   # # Calculate min and max of x and y coordinates
   # max_x <- max(data_loc$x)
@@ -187,22 +187,22 @@ append_exp_info <- function(data_loc, file_name){
   # Split filename so that experimental information can be extracted
   file_name <- strsplit(file_name, ' ')
   # Extract cosm numbers
-  cosm_nrs <- unlist(file_name)[6]
+  cosm_nrs <- unlist(file_name)[7]
   cosm_nrs <- strsplit(cosm_nrs, '&')
   cosm_nrs <- as.integer(unlist(cosm_nrs))
   # Extract species
-  test_species <- unlist(file_name)[3]
+  test_species <- unlist(file_name)[4]
   # Extract test date
-  test_date <- unlist(strsplit(unlist(file_name)[1], '/'))[2]
+  test_date <- unlist(strsplit(unlist(file_name)[2], '/'))[2]
   
   # Convert location to numeric vector
-  data_loc$location_temp <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
+  data_loc$ind <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
   # Add cosm nr to dataframe
-  data_loc$cosm_nr <- ifelse(data_loc$location_temp <= 10, cosm_nrs[1], cosm_nrs[2])
+  data_loc$cosm_nr <- ifelse(data_loc$ind <= 10, cosm_nrs[1], cosm_nrs[2])
   ## Add animal nr per cosm
-  #data_loc$location_temp <- ifelse(data_loc$location_temp <= 10, seq(1,10,1), seq(1,10,1))
-  data_loc$location_temp <- ifelse(data_loc$location_temp <= 10, data_loc$location_temp,
-                                   (data_loc$location_temp - 10))
+  #data_loc$ind <- ifelse(data_loc$ind <= 10, seq(1,10,1), seq(1,10,1))
+  data_loc$ind <- ifelse(data_loc$ind <= 10, data_loc$ind,
+                                   (data_loc$ind - 10))
   # Add species to dataframe
   data_loc$test_species <- test_species
   # Add test date to dataframe
