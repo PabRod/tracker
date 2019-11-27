@@ -9,11 +9,13 @@ library(MASS)
 sapply(list.files('R', full.names = T), source)
 
 # Create list of test dates
-test_dates <- c('2019-07-31', '2019-08-01', '2019-08-08', '2019-08-15', '2019-08-15')
-test_species <- c('Gammarus', 'snail', 'Gammarus', 'Gammarus', 'snail')
+test_dates <- c('2019-07-31', '2019-08-01', '2019-08-08', '2019-08-15', '2019-08-15', 
+                '2019-08-23', '2019-08-30', '2019-09-06', '2019-10-07', '2019-10-08')
+test_species <- c('Gammarus', 'snail', 'Gammarus', 'Gammarus', 'snail', 
+                  'Gammarus', 'Gammarus', 'snail', 'snail', 'Gammarus')
 
 # Loop through test dates
-for(n in 1:length(test_dates)){
+for(n in c(1,4,6,10)){ #set as 1:length(test_dates) if you want to go through all data
   
   # List files
   date <- test_dates[[n]]
@@ -51,7 +53,11 @@ for(n in 1:length(test_dates)){
   # Combine all data together
   output_data <- do.call('rbind', output)
   # Load treatment data
-  treatments <- read.csv('data/treatments.csv')
+  if(n > 5){ # After n = 5 comes the lab data
+    treatments <- read.csv('data/treatments_lab.csv')
+  } else{
+    treatments <- read.csv('data/treatments.csv')
+  }
   # Add treatment data to rest of data
   output_data <- merge(x = output_data, y = treatments, by.x = "cosm_nr", by.y = "Cosm")
   
