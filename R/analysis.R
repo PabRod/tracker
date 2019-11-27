@@ -23,6 +23,7 @@ append_dynamics <- function(data_loc) {
   data <- cbind(data_loc, speeds, aspeed, accels, aaccel, curv_radius)
 }
 
+
 #' Return speeds
 #'
 #' @param t The times vector
@@ -72,6 +73,7 @@ accel <- function(t, x, y) {
   accels <- data.frame(ax, ay)
 }
 
+
 #' Return curvatures
 #'
 #' @param t The times vector
@@ -94,6 +96,7 @@ curvature <- function(t, x, y) {
   curv_radius <- abs(aspeed^3)/abs(cross_prod)
 }
 
+
 #' Returns a dataframe with rows filtered
 #'
 #' @param input_data The clean data from all locations
@@ -113,8 +116,6 @@ filter_data <- function(input_data, filter_location){
 #'
 #' @return A data frame including the polar coordinates
 #' @export
-#'
-#' @seealso \code{\link{speed}, \link{accel}}
 #'
 append_polar_coordinates <- function(data_loc) {
   
@@ -154,6 +155,7 @@ append_polar_coordinates <- function(data_loc) {
   data <- cbind(data_loc, x_r, y_r, r, th, d)
 }
 
+
 #' Returns a dataframe with an extra column containing the timebin
 #'
 #' @param data_loc The clean data from a given location
@@ -161,12 +163,13 @@ append_polar_coordinates <- function(data_loc) {
 #' @return A data frame including the timebin
 #' @export
 #'
-#' @seealso \code{\link{speed}, \link{accel}}
-#'
 append_time_bins <- function(data_loc) {
-  data_loc$time_bin <- ifelse(data_loc$time < 1.2e8, 1, 
+  data_loc$light_interval <- ifelse(data_loc$time < 1.2e8, 1, 
                               ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2, 
                                      ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
+  ## Create a binary variable indicating when light is on or off
+  data_loc$light_on_off <- ifelse(data_loc$light_interval == 1 | 
+                                    data_loc$light_interval == 3, 0, 1)
   # Convert microseconds to seconds
   data_loc$time <- data_loc$time/1e6
   return(data_loc)
@@ -180,8 +183,6 @@ append_time_bins <- function(data_loc) {
 #'
 #' @return A data frame including the cosmnr
 #' @export
-#'
-#' @seealso \code{\link{speed}, \link{accel}}
 #'
 append_exp_info <- function(data_loc, file_name){
   # Split filename so that experimental information can be extracted
@@ -200,9 +201,11 @@ append_exp_info <- function(data_loc, file_name){
   # Add cosm nr to dataframe
   data_loc$cosm_nr <- ifelse(data_loc$ind <= 10, cosm_nrs[1], cosm_nrs[2])
   ## Add animal nr per cosm
-  #data_loc$ind <- ifelse(data_loc$ind <= 10, seq(1,10,1), seq(1,10,1))
-  data_loc$ind <- ifelse(data_loc$ind <= 10, data_loc$ind,
-                                   (data_loc$ind - 10))
+  if(test_species == 'Gammarus'){
+    data_loc$ind <- ifelse(data_loc$ind <= 10, data_loc$ind,
+                           (data_loc$ind - 10))
+  }
+  #data_loc$ind <- ifelse(data_loc$ind <= 10, seq(1,10,1), seq(1,10,1)
   # Add species to dataframe
   data_loc$test_species <- test_species
   # Add test date to dataframe
@@ -210,4 +213,42 @@ append_exp_info <- function(data_loc, file_name){
   
   # Return extended data
   return(data_loc)
+}
+
+
+#' Returns a dataframe with data summarised to the defined timebin
+#'
+#' @param input_data The clean data
+#' @param chemical The name of the chemical that is going to be summarised
+#' @param exp_dur The duration of the total experiment
+#' @param timebin The timebin over which the data is going to be summarised
+#' @expsr_dur The exposure duration of the experiment
+#'
+#' @return A data frame that gives the mean and SD of the velocity over the timebins
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}}
+#'
+## Make combined heatmap for Gammarus Acute and Chronic
+summarise_data <- function(input_data, chemical, exp_dur, timebin, expsr_dur){
+  # Only focus on one chemical
+  data <- filter(input_data, Treatment_chem == chemical | Treatment_chem == 'C')
+  
+  # Create timebins
+  bins <- seq(0, exp_dur, timebin)
+  # Add timebins to data
+  data$group <- cut(data$time, bins, labels = FALSE)
+  # Remove NAs (time > 480)
+  data <- data[!is.na(data$group),]
+  # Add interaction between timebin and treatment group
+  data$combined_group <- interaction(data$group, data$Treatment_conc)
+  
+  # Summarise by group
+  data_summarised <- data %>% group_by(combined_group) %>%
+    summarise(avaspeed = mean(aspeed),
+              sdaspeed = sd(aspeed),
+              group = mean(group),
+              Treatment_conc = mean(Treatment_conc))
+  data_summarised$expsr_dur <- expsr_dur
+  return(data_summarised)
 }
