@@ -68,5 +68,32 @@ gammarus_data$bins <- cut(gammarus_data$time, bins, labels = FALSE)
 gammarus_data <- gammarus_data[!is.na(gammarus_data$bins),]
 unique(gammarus_data$bins) 
 
+## Change variables into factors
+gammarus_data <- gammarus_data %>% 
+  dplyr::mutate(laspeed = log(aspeed + 1), 
+                Treatment_conc = factor(Treatment_conc, 
+                                        levels = c(0, 0.1, 1, 10, 100)),
+                Treatment_chem = factor(Treatment_chem, 
+                                        levels = c("C", "SC", "FLU")),
+                test_duration = factor(test_duration, 
+                                       levels = c("21","2")),
+                test_location = factor(test_location, 
+                                       levels = c("field","lab")),
+                light_interval = factor(light_interval, 
+                                        levels = 1:4, 
+                                        labels = c("off1", "on1", "off2", "on2")),
+                light_on_off = factor(light_on_off, levels = c(0, 1),
+                                      labels = c("off", "on")))
+## Summarise to 10 second bins
+gammarus_data <- gammarus_data %>% group_by(
+  cosm_nr, ind, Treatment_chem, Treatment_conc, test_location, bins, 
+  test_duration, light_interval, light_on_off) %>% 
+  summarise( 
+    avlaspeed = mean(laspeed), 
+    vavlaspeed = var(laspeed),
+    number = n()) %>% 
+  mutate(selaspeed = vavlaspeed/number)
+
+
 ## Save final combined data
 save(gammarus_data, file = 'output/gammarus_data_final.Rda') # This is the object Daniel needs
