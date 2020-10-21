@@ -125,8 +125,10 @@ append_polar_coordinates <- function(data_loc) {
   # Convert scale
   scale_value <- 0.46 # This value is extracted from the protocol
   arenas[2:5] <- apply(arenas[2:5], 2, function(x) x*scale_value)
+  # Combination of cosm and ind determines absolute position on board
+  data_loc$ind_abd <- ifelse(is_even(data_loc$cosm_nr[[1]]), data_loc$ind+10, data_loc$ind)
   # Merge with other data
-  data_loc <- merge(data_loc, arenas, by.x = 'ind', by.y = 'id')
+  data_loc <- merge(data_loc, arenas, by.x = 'ind_abd', by.y = 'id')
   
   # # Calculate min and max of x and y coordinates
   # max_x <- max(data_loc$x)
@@ -252,3 +254,5 @@ summarise_data <- function(input_data, chemical, exp_dur, timebin, expsr_dur){
   data_summarised$expsr_dur <- expsr_dur
   return(data_summarised)
 }
+
+is_even <- function(x) x %% 2 == 0

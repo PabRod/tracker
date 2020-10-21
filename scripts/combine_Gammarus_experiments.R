@@ -5,7 +5,7 @@ rm(list=ls())
 library(dplyr)
 
 ## Preprocess data
-source('scripts/data_assembly.R')
+#source('scripts/data_assembly.R')
 
 
 ######### Load all pre-processed data and combine all gammarus experiments together
@@ -25,13 +25,13 @@ gammarus_chronic_cosm$test_duration <- 21
 load('output/Gammarus_2019-08-23.Rda')
 gammarus_acute_lab <- output_data
 # Remove some irrelevant columns
-gammarus_acute_lab <- gammarus_acute_lab[-c(29:31)]
+gammarus_acute_lab <- subset(gammarus_acute_lab, select = -c(species, feeding, test_duration))
 gammarus_acute_lab$test_location <- 'lab'
 gammarus_acute_lab$test_duration <- 2
 load('output/Gammarus_2019-10-08.Rda')
 gammarus_chronic_lab <- output_data
 # Remove some irrelevant columns
-gammarus_chronic_lab <- gammarus_chronic_lab[-c(29:31)]
+gammarus_chronic_lab <- subset(gammarus_chronic_lab, select = -c(species, feeding, test_duration))
 gammarus_chronic_lab$test_location <- 'lab'
 gammarus_chronic_lab$test_duration <- 21
 
