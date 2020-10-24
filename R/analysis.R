@@ -161,7 +161,7 @@ filter_data <- function(input_data, filter_location){
   input_data %>% filter(location == filter_location)
 }
 
-#' Returns a dataframe with extra columns with polar coordinates
+#' Returns a data frame with extra columns with polar coordinates
 #'
 #' @param data_loc The clean data from a given location
 #'
@@ -201,11 +201,8 @@ append_polar_coordinates <- function(data_loc) {
   r <- sqrt(x_r^2+y_r^2)
   th <- atan2(y = y_r, x = x_r)
 
-  # Calculate the cumulative distance traveled
-  d <- cumsum(r) # TODO check this function
-
   # Paste everything together
-  data <- cbind(data_loc, x_r, y_r, r, th, d)
+  data <- cbind(data_loc, x_r, y_r, r, th)
 }
 
 
