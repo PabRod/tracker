@@ -43,7 +43,7 @@ rm(list = c('gammarus_acute_cosm', 'gammarus_chronic_cosm',
    'gammarus_acute_lab', 'gammarus_chronic_lab', 'output_data'))
 
 
-######### Here starts an overview of the data, and the columns which are imporant for our analysis
+######### Here starts an overview of the data, and the columns which are important for our analysis
 
 ## See data
 head(gammarus_data)
@@ -68,9 +68,13 @@ gammarus_data$bins <- cut(gammarus_data$time, bins, labels = FALSE)
 gammarus_data <- gammarus_data[!is.na(gammarus_data$bins),]
 unique(gammarus_data$bins) 
 
+## Remove errors
+unrealistic_speed <- mean(gammarus_data$aspeed)+2*sd(gammarus_data$aspeed)
+gammarus_data <- filter(gammarus_data, aspeed < unrealistic_speed)
+
 ## Change variables into factors
 gammarus_data <- gammarus_data %>% 
-  dplyr::mutate(laspeed = log(aspeed + 1), 
+  dplyr::mutate(laspeed = log(aaccel), 
                 Treatment_conc = factor(Treatment_conc, 
                                         levels = c(0, 0.1, 1, 10, 100)),
                 Treatment_chem = factor(Treatment_chem, 
@@ -86,12 +90,12 @@ gammarus_data <- gammarus_data %>%
                                       labels = c("off", "on")))
 ## Summarise to 10 second bins
 gammarus_data <- gammarus_data %>% group_by(
-  cosm_nr, ind, Treatment_chem, Treatment_conc, test_location, bins, 
-  test_duration, light_interval, light_on_off) %>% 
-  summarise( 
-    avlaspeed = mean(laspeed), 
+  cosm_nr, ind, Treatment_chem, Treatment_conc, test_location, bins,
+  test_duration, light_interval, light_on_off) %>%
+  summarise(
+    avlaspeed = mean(laspeed),
     vavlaspeed = var(laspeed),
-    number = n()) %>% 
+    number = n()) %>%
   mutate(selaspeed = vavlaspeed/number)
 
 
