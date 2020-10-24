@@ -15,6 +15,3 @@ A data frame including the polar coordinates
 \description{
 Returns a dataframe with extra columns with polar coordinates
 }
-\seealso{
-\code{\link{speed}, \link{accel}}
-}

@@ -48,7 +48,6 @@ speed <- function(t, x, y) {
   speeds <- data.frame(vx, vy)
 }
 
-
 #' Return accelerations
 #'
 #' @param t The times vector

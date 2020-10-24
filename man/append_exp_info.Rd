@@ -17,6 +17,3 @@ A data frame including the cosmnr
 \description{
 Returns a dataframe with extra columns indicating experimental information
 }
-\seealso{
-\code{\link{speed}, \link{accel}}
-}

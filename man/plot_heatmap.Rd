@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_heatmap}
 \alias{plot_heatmap}
-\title{Plot positions}
+\title{Plot heatmap}
 \usage{
 plot_heatmap(test_date, chemical, timebin, exp_dur)
 }
@@ -19,5 +19,5 @@ plot_heatmap(test_date, chemical, timebin, exp_dur)
 The plot
 }
 \description{
-Plot positions
+Plot heatmap
 }
