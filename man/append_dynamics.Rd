@@ -2,19 +2,21 @@
 % Please edit documentation in R/analysis.R
 \name{append_dynamics}
 \alias{append_dynamics}
-\title{Returns a dataframe with extra columns with dynamical information}
+\title{Returns a data frame with extra columns with dynamical information}
 \usage{
-append_dynamics(data_loc)
+append_dynamics(data_loc, append.displacement = TRUE)
 }
 \arguments{
 \item{data_loc}{The clean data from a given location}
+
+\item{append.displacement}{(Optional) Set it to FALSE to not calculate displacements. Useful if the data is going to be resampled}
 }
 \value{
-A data frame including the speeds and accelerations
+A data frame including instantaneous dynamical variables, such as speed and acceleration
 }
 \description{
-Returns a dataframe with extra columns with dynamical information
+Returns a data frame with extra columns with dynamical information
 }
 \seealso{
-\code{\link{speed}, \link{accel}}
+\code{\link{speed}, \link{accel}, \link{append_displacement}}
 }
