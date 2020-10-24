@@ -55,7 +55,7 @@ test_that('Curvature (circle)',
             y <- R_expected*sin(t)
 
             # Estimate the speeds from the generated data
-            curvs_estimated <- curvature(t, x, y)
+            curvs_estimated <- curvature_radius(t, x, y)
 
             # Check that the estimates are correct
             tol <- 0.01
@@ -77,7 +77,7 @@ test_that('Curvature (ellipse)',
             R_expected <- (a^2*(sin(t))^2 + b^2*(cos(t))^2)^(3/2)/(a*b)
 
             # Estimate the speeds from the generated data
-            curvs_estimated <- curvature(t, x, y)
+            curvs_estimated <- curvature_radius(t, x, y)
 
             # Check that the estimates are correct
             tol <- 1e-2

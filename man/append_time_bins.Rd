@@ -15,6 +15,3 @@ A data frame including the timebin
 \description{
 Returns a dataframe with an extra column containing the timebin
 }
-\seealso{
-\code{\link{speed}, \link{accel}}
-}

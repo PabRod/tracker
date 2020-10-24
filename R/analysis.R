@@ -1,15 +1,16 @@
 # Analysis functions
 
-#' Returns a dataframe with extra columns with dynamical information
+#' Returns a data frame with extra columns with dynamical information
 #'
 #' @param data_loc The clean data from a given location
+#' @param append.displacement (Optional) Set it to FALSE to not calculate displacements. Useful if the data is going to be resampled
 #'
-#' @return A data frame including the speeds and accelerations
+#' @return A data frame including instantaneous dynamical variables, such as speed and acceleration
 #' @export
 #'
-#' @seealso \code{\link{speed}, \link{accel}}
+#' @seealso \code{\link{speed}, \link{accel}, \link{append_displacement}}
 #'
-append_dynamics <- function(data_loc) {
+append_dynamics <- function(data_loc, append.displacement = TRUE) {
   # Directional dynamical data
   speeds <- speed(data_loc$time, data_loc$x, data_loc$y)
   accels <- accel(data_loc$time, data_loc$x, data_loc$y)
@@ -17,12 +18,47 @@ append_dynamics <- function(data_loc) {
   # Absolute dynamical data
   aspeed <- sqrt(speeds$vx^2 + speeds$vy^2)
   aaccel <- sqrt(accels$ax^2 + accels$ay^2)
-  curv_radius <- curvature(data_loc$time, data_loc$x, data_loc$y)
+  curv <- curvature(data_loc$time, data_loc$x, data_loc$y)
+  curv_radius <- curvature_radius(data_loc$time, data_loc$x, data_loc$y)
 
   # Paste everything together
-  data <- cbind(data_loc, speeds, aspeed, accels, aaccel, curv_radius)
+  data <- cbind(data_loc, speeds, aspeed, accels, aaccel, curv, curv_radius)
+
+  # Add displacements if required
+  if(append.displacement) {
+    data <- append_displacement(data)
+  }
+  # Why would you NOT want this to happen? For instance, at resampling. In such a
+  # case it is smarter to set append.displacement to FALSE, drop the displacements,
+  # and recalculate them with append_displacement alone with the new times
+
+  return(data)
 }
 
+#' Returns a dataframe extra columns with information about the time-to-time displacements
+#'
+#' @param data A dataframe with basic dynamics (typically the output of append_dynamics)
+#'
+#' @return A data frame including al the dynamical information, including displacements
+#' @export
+#'
+#' @seealso \code{\linl{append_dynamics}, \link{speed}, \link{accel}}
+#'
+append_displacement <- function(data) {
+  # The displacement is a bit more complicated than other dynamical variables, as it requires knowing the time differences
+  # and thus is not rigorously an instantaneous measure.
+
+  # The time differences are extracted here
+  dts <- c(0, diff(data$time)) # The zero ensures dts and data have the same length
+
+  # Extract the displacements
+  disp_x <- dts * data$vx
+  disp_y <- dts * data$vy
+  adisp <- dts * data$aspeed
+
+  # Append them to the final result
+  data <- cbind(data, data.frame(disp_x, disp_y, adisp))
+}
 
 #' Return speeds
 #'
@@ -46,7 +82,6 @@ speed <- function(t, x, y) {
 
   speeds <- data.frame(vx, vy)
 }
-
 
 #' Return accelerations
 #'
@@ -73,17 +108,16 @@ accel <- function(t, x, y) {
   accels <- data.frame(ax, ay)
 }
 
-
 #' Return curvatures
 #'
 #' @param t The times vector
 #' @param x The x positions
 #' @param y The y positions
 #'
-#' @return The local radii of curvature
+#' @return The local curvature
 #' @export
 #'
-#' @seealso \code{\link{speed}, \link{accel}}
+#' @seealso \code{\link{speed}, \link{accel}, \link{curvature_radius}}
 #'
 curvature <- function(t, x, y) {
   # First get speeds and accelerations
@@ -91,11 +125,29 @@ curvature <- function(t, x, y) {
   aspeed <- sqrt(speeds$vx^2 + speeds$vy^2)
   accels <- accel(t, x, y)
 
-  # Calculate the local radius of curvature
+  # Calculate the cross product
   cross_prod <- speeds$vx*accels$ay - speeds$vy*accels$ax
-  curv_radius <- abs(aspeed^3)/abs(cross_prod)
+
+  # Apply the definition of curvature
+  curv <- abs(cross_prod)/abs(aspeed^3)
 }
 
+#' Return curvature radius
+#'
+#' @param t The times vector
+#' @param x The x positions
+#' @param y The y positions
+#'
+#' @return The local curvature radius
+#' @export
+#'
+#' @seealso \code{\link{speed}, \link{accel}, \link{curvature}}
+#'
+curvature_radius <- function(t, x, y) {
+  # The curvatre radius is just the inverse of the local curvature
+  curvatures <- curvature(t, x, y)
+  curv_radius <- 1 / curvatures
+}
 
 #' Returns a dataframe with rows filtered
 #'
@@ -106,11 +158,10 @@ curvature <- function(t, x, y) {
 #' @export
 #'
 filter_data <- function(input_data, filter_location){
-  input_data %>% filter(location == filter_location) 
+  input_data %>% filter(location == filter_location)
 }
 
-
-#' Returns a dataframe with extra columns with polar coordinates
+#' Returns a data frame with extra columns with polar coordinates
 #'
 #' @param data_loc The clean data from a given location
 #'
@@ -118,7 +169,7 @@ filter_data <- function(input_data, filter_location){
 #' @export
 #'
 append_polar_coordinates <- function(data_loc) {
-  
+
   # Load data on arenas
   # Load coordinates of gammarus or snail protocol
   arenas <- read.csv(paste('data/arenas_', data_loc$test_species[1], '.csv', sep = ''))
@@ -129,32 +180,29 @@ append_polar_coordinates <- function(data_loc) {
   data_loc$ind_abd <- ifelse(is_even(data_loc$cosm_nr[[1]]), data_loc$ind+10, data_loc$ind)
   # Merge with other data
   data_loc <- merge(data_loc, arenas, by.x = 'ind_abd', by.y = 'id')
-  
+
   # # Calculate min and max of x and y coordinates
   # max_x <- max(data_loc$x)
   # min_x <- min(data_loc$x)
   # max_y <- max(data_loc$y)
   # min_y <- min(data_loc$y)
-  
+
   # Calculate center of the petridish
   #r_0_x <- mean(c(max_x, min_x))
   r_0_x <- data_loc$cx[1]
   #r_0_y <- mean(c(max_y, min_y))
   r_0_y <- data_loc$cy[1]
-  
+
   # Correct the coordinates according to the center of the petridish
   x_r <- data_loc$x-r_0_x
   y_r <- data_loc$y-r_0_y
-  
+
   # Calculate the polar coordinates
   r <- sqrt(x_r^2+y_r^2)
   th <- atan2(y = y_r, x = x_r)
-  
-  # Calculate the cumulative distance traveled
-  d <- cumsum(r) # TODO check this function
-  
+
   # Paste everything together
-  data <- cbind(data_loc, x_r, y_r, r, th, d)
+  data <- cbind(data_loc, x_r, y_r, r, th)
 }
 
 
@@ -166,11 +214,11 @@ append_polar_coordinates <- function(data_loc) {
 #' @export
 #'
 append_time_bins <- function(data_loc) {
-  data_loc$light_interval <- ifelse(data_loc$time < 1.2e8, 1, 
-                              ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2, 
+  data_loc$light_interval <- ifelse(data_loc$time < 1.2e8, 1,
+                              ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2,
                                      ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
   ## Create a binary variable indicating when light is on or off
-  data_loc$light_on_off <- ifelse(data_loc$light_interval == 1 | 
+  data_loc$light_on_off <- ifelse(data_loc$light_interval == 1 |
                                     data_loc$light_interval == 3, 0, 1)
   # Convert microseconds to seconds
   data_loc$time <- data_loc$time/1e6
@@ -197,7 +245,7 @@ append_exp_info <- function(data_loc, file_name){
   test_species <- unlist(file_name)[4]
   # Extract test date
   test_date <- unlist(strsplit(unlist(file_name)[2], '/'))[2]
-  
+
   # Convert location to numeric vector
   data_loc$ind <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
   # Add cosm nr to dataframe
@@ -212,7 +260,7 @@ append_exp_info <- function(data_loc, file_name){
   data_loc$test_species <- test_species
   # Add test date to dataframe
   data_loc$test_date <- test_date
-  
+
   # Return extended data
   return(data_loc)
 }
@@ -235,7 +283,7 @@ append_exp_info <- function(data_loc, file_name){
 summarise_data <- function(input_data, chemical, exp_dur, timebin, expsr_dur){
   # Only focus on one chemical
   data <- filter(input_data, Treatment_chem == chemical | Treatment_chem == 'C')
-  
+
   # Create timebins
   bins <- seq(0, exp_dur, timebin)
   # Add timebins to data
@@ -244,7 +292,7 @@ summarise_data <- function(input_data, chemical, exp_dur, timebin, expsr_dur){
   data <- data[!is.na(data$group),]
   # Add interaction between timebin and treatment group
   data$combined_group <- interaction(data$group, data$Treatment_conc)
-  
+
   # Summarise by group
   data_summarised <- data %>% group_by(combined_group) %>%
     summarise(avaspeed = mean(aspeed),
