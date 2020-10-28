@@ -1,12 +1,13 @@
-# Clear environment
-rm(list=ls())
-
-# Load libraries
-library(dplyr)
-library(MASS)
-
-# Source all functions
-sapply(list.files('R', full.names = T), source)
+#' Assemble all measurements, files, and experiments
+#'
+#' @param date The date of the experiment
+#' @param species The name of the test species
+#' @param save Dummy variable indicating intermittent saving
+#'
+#' @return All the data for one experiment
+#' @export
+#'
+#'
 
 assemble_data <- function(date, species, save = TRUE) {
   files <- list.files('data/raw data', full.names = T)
@@ -35,13 +36,13 @@ assemble_data <- function(date, species, save = TRUE) {
     data <- lapply(data, function(x){ append_exp_info(x, files[[file.nr]]) })
     # Append polar coordinates and make histogram of radius distribution
     data <- lapply(data, function(x){ append_polar_coordinates(x) })
-    # Collect all data together
+    # Collect all locations together
     data <- do.call('rbind', data)
     # Store in output list
     output[[file.nr]] <- data
   }
   
-  # Combine all data together
+  # Combine all files together
   output_data <- do.call('rbind', output)
   
   # Load treatment data
@@ -62,35 +63,3 @@ assemble_data <- function(date, species, save = TRUE) {
   
   return(output_data)
 }
-
-## Create list of test dates
-#test_dates <- c('2019-07-31', '2019-08-01', '2019-08-08', '2019-08-15', '2019-08-15', 
-#                '2019-08-23', '2019-08-30', '2019-09-06', '2019-10-07', '2019-10-08')
-#test_species <- c('Gammarus', 'snail', 'Gammarus', 'Gammarus', 'snail', 
-#                  'Gammarus', 'Gammarus', 'snail', 'snail', 'Gammarus')
-
-# Apply function to experiments of interest
-test_dates <- c('2019-07-31','2019-08-15','2019-08-23','2019-10-08')
-output_data <- lapply(test_dates, function(x){ assemble_data(date = x, species = 'Gammarus') })
-
-## Combine experiments of interest together
-gammarus_data <- do.call('rbind', output_data)
-
-## We are only interested in Fluoxetine data, so remove SMX data (other chemical we also tested)
-gammarus_data <- filter(gammarus_data, Treatment_chem != 'SMX')
-
-## Change variables into factors
-gammarus_data <- gammarus_data %>% 
-  dplyr::mutate(Treatment_conc = factor(Treatment_conc, 
-                                        levels = c(0, 0.1, 1, 10, 100)),
-                Treatment_chem = factor(Treatment_chem, 
-                                        levels = c("C", "SC", "FLU")),
-                test_duration = factor(test_duration, 
-                                       levels = c("21","2")),
-                test_location = factor(test_location, 
-                                       levels = c("field","lab")),
-                light_interval = factor(light_interval, 
-                                        levels = 1:4, 
-                                        labels = c("off1", "on1", "off2", "on2")),
-                light_on_off = factor(light_on_off, levels = c(0, 1),
-                                      labels = c("off", "on")))
