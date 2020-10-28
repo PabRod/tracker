@@ -25,8 +25,10 @@ assemble_data <- function(date, species, save = TRUE) {
     list_locations <- as.list(unique(data$location))
     # Filter on location
     data <- lapply(list_locations, function(x){ filter_data(data, filter_location = x) })
-    # Append timebins
-    data <- lapply(data, function(x){ append_time_bins(x) }) # TODO only for Gammarus
+    # Append light interval
+    data <- lapply(data, function(x){ append_light_interval(x) }) # TODO only for Gammarus
+    ## Convert the unit of time from microseconds to seconds
+    data <- lapply(data, function(x){x$time <- x$time/1e6; x})
     # Append dynamics to all locations
     data <- lapply(data, function(x){ append_dynamics(x) })
     # Add experimental data

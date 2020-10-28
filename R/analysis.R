@@ -206,22 +206,21 @@ append_polar_coordinates <- function(data_loc) {
 }
 
 
-#' Returns a dataframe with an extra column containing the timebin
+#' Returns a dataframe with extra columns containing the light interval, and light as a dummy variable
 #'
 #' @param data_loc The clean data from a given location
 #'
 #' @return A data frame including the timebin
 #' @export
 #'
-append_time_bins <- function(data_loc) {
+append_light_interval <- function(data_loc) {
   data_loc$light_interval <- ifelse(data_loc$time < 1.2e8, 1,
                               ifelse(data_loc > 1.2e8 & data_loc$time < 2.4e8, 2,
                                      ifelse(data_loc$time > 2.4e8 & data_loc$time < 3.6e8, 3, 4)))
   ## Create a binary variable indicating when light is on or off
   data_loc$light_on_off <- ifelse(data_loc$light_interval == 1 |
                                     data_loc$light_interval == 3, 0, 1)
-  # Convert microseconds to seconds
-  data_loc$time <- data_loc$time/1e6
+
   return(data_loc)
 }
 
