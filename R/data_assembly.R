@@ -46,7 +46,7 @@ assemble_data <- function(date, species, save = TRUE) {
   output_data <- do.call('rbind', output)
   
   # Load treatment data
-  if(date %in% c('2019-07-31', '2019-08-15')){ # These dates are the lab exps
+  if(date %in% c('2019-08-23','2019-10-08')){ # These dates are the lab exps
     treatments <- read.csv('data/treatments_lab.csv')
     treatments$test_location <- 'lab' # Add test_location
   } else{

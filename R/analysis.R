@@ -307,7 +307,7 @@ is_even <- function(x) x %% 2 == 0
 remove_unrealistic_speeds <- function(input_data){
   
   # Set threshold for unrealistic speed
-  unrealistic_speed <- mean(input_data$aspeed)+2*sd(input$data$aspeed) #(90/0.035)/5
+  unrealistic_speed <- mean(input_data$aspeed)+2*sd(input_data$aspeed) #(90/0.035)/5
   # Remove rows that contain unrealistic speeds
   output_data <- filter(input_data, aspeed < unrealistic_speed)
   # Return output
