@@ -14,6 +14,8 @@ summarise_data(input_data, chemical, exp_dur, timebin, expsr_dur)
 \item{exp_dur}{The duration of the total experiment}
 
 \item{timebin}{The timebin over which the data is going to be summarised}
+
+\item{expsr_dur}{The exposure duration of the experiment}
 }
 \value{
 A data frame that gives the mean and SD of the velocity over the timebins

@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{append_polar_coordinates}
 \alias{append_polar_coordinates}
-\title{Returns a dataframe with extra columns with polar coordinates}
+\title{Returns a data frame with extra columns with polar coordinates}
 \usage{
 append_polar_coordinates(data_loc)
 }
@@ -13,5 +13,5 @@ append_polar_coordinates(data_loc)
 A data frame including the polar coordinates
 }
 \description{
-Returns a dataframe with extra columns with polar coordinates
+Returns a data frame with extra columns with polar coordinates
 }
