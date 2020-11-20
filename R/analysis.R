@@ -244,7 +244,13 @@ append_exp_info <- function(data_loc, file_name){
   test_species <- unlist(file_name)[4]
   # Extract test date
   test_date <- unlist(strsplit(unlist(file_name)[2], '/'))[2]
-
+  
+  # Add test_duration
+  if(test_date %in% c('2019-08-15','2019-08-23')){ # These dates are the lab exps
+    data_loc$test_duration <- 2
+  } else{
+    data_loc$test_duration <- 21
+  }
   # Convert location to numeric vector
   data_loc$ind <- as.integer(strsplit(data_loc$location, 'Loc')[[1]][2])
   # Add cosm nr to dataframe
@@ -271,7 +277,7 @@ append_exp_info <- function(data_loc, file_name){
 #' @param chemical The name of the chemical that is going to be summarised
 #' @param exp_dur The duration of the total experiment
 #' @param timebin The timebin over which the data is going to be summarised
-#' @expsr_dur The exposure duration of the experiment
+#' @param expsr_dur The exposure duration of the experiment
 #'
 #' @return A data frame that gives the mean and SD of the velocity over the timebins
 #' @export
