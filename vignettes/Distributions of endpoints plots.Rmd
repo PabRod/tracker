@@ -1,0 +1,139 @@
+---
+title: "Distributions of endpoints"
+author: "Sanne van den Berg"
+date: "22-10-2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+## Load libraries
+library(tidyverse)
+library(ggpubr)
+library(nlme)
+library(multcomp)
+library(car)
+library(gtable)
+library(dplyr)
+library(ggExtra)
+library(bookdown)
+library(MASS)
+#library(magrittr)
+
+## Source functions
+sapply(list.files('./../R', full.names = T), source)
+
+## Set figure settings
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
+                      fig.height = 5, fig.width = 8, cache = TRUE,
+                      cache.lazy = FALSE)
+
+```
+
+```{r assembly, include=FALSE}
+
+## Create list of test dates
+#test_dates <- c('2019-07-31', '2019-08-01', '2019-08-08', '2019-08-15', '2019-08-15', 
+#                '2019-08-23', '2019-08-30', '2019-09-06', '2019-10-07', '2019-10-08')
+#test_species <- c('Gammarus', 'snail', 'Gammarus', 'Gammarus', 'snail', 
+#                  'Gammarus', 'Gammarus', 'snail', 'snail', 'Gammarus')
+
+# Apply function to experiments of interest
+ test_dates <- c('2019-07-31','2019-08-15','2019-08-23','2019-10-08')
+#test_dates <- c('2019-07-31')
+output_data <- lapply(test_dates, function(x){ assemble_data(test_date = x, test_species = 'Gammarus') })
+
+## Combine experiments of interest together
+gammarus_data <- do.call('rbind', output_data)
+
+## Remove unrealistic speeds (faster than the mean + 2x the SD)
+gammarus_data <- remove_unrealistic_speeds(gammarus_data)
+
+## We are only interested in Fluoxetine data, so remove SMX data (other chemical we also tested)
+gammarus_data <- filter(gammarus_data, Treatment_chem != 'SMX')
+
+## Change variables into factors
+gammarus_data <- gammarus_data %>% 
+  dplyr::mutate(Treatment_conc = factor(Treatment_conc, 
+                                        levels = c(0, 0.1, 1, 10, 100)),
+                Treatment_chem = factor(Treatment_chem, 
+                                        levels = c("C", "SC", "FLU")),
+                test_duration = factor(test_duration, 
+                                       levels = c("21","2")),
+                test_location = factor(test_location, 
+                                       levels = c("field","lab")),
+                light_interval = factor(light_interval, 
+                                        levels = 1:4, 
+                                        labels = c("off1", "on1", "off2", "on2")),
+                light_on_off = factor(light_on_off, levels = c(0, 1),
+                                      labels = c("off", "on")))
+
+## Load raw Gammarus data
+save(gammarus_data, 'output/gammarus_data_final.Rda')
+#load("./../output/gammarus_data_final.Rda")
+
+## Filter out only control data of one experiment
+controls <- dplyr::filter(gammarus_data, Treatment_conc == 0 & test_location == 'lab' & test_duration == 2)
+
+```
+
+```{r error-removal, include = FALSE}
+
+## Remove unrealistic speeds
+unrealistic_speed <- (90/0.035)/5
+unrealistic_speed <- mean(controls$aspeed)+2*sd(controls$aspeed)
+gammarus_data <- filter(gammarus_data, aspeed < unrealistic_speed)
+controls <- filter(controls, aspeed < unrealistic_speed)
+```
+
+
+
+```{r visualization, include = FALSE}
+controls %>% filter(cosm_nr == 51 & ind == 1) %>% 
+  ggplot(aes(x = log(aspeed+1)))+geom_density()
+
+p1 <- controls %>% filter(cosm_nr == 1 & ind == 1)
+  ggplot(aes(x = log(aspeed+1))) + 
+  geom_density() #+ xlim(0, 150)
+p2 <- controls %>%
+  ggplot(aes(x = log(aaccel))) + 
+  geom_density() #+ xlim(0, 150)
+p3 <- controls %>%
+  ggplot(aes(x = r)) + 
+  geom_density() #+ xlim(0, 150)
+p4 <- controls %>%
+  ggplot(aes(x = log(curv_radius))) + 
+  geom_density() + xlim(-0.05, 0.10)
+p5 <- controls %>%
+  ggplot(aes(x = d)) + 
+  geom_density() #+ xlim(0, 150)
+
+
+## Combine the plots in one figure
+p <- ggarrange(p1, p2, p3, p4, p5, ncol = 1)
+plot(p)
+  
+```
+
+```{r compdistr, include = FALSE}
+
+gammarus_data %>% filter(Treatment_conc == 0 & test_location == 'lab' & test_duration == 2) %>% 
+     ggplot(aes(x = log(aspeed+1)))+geom_density()
+gammarus_data %>% filter(Treatment_conc == 0.1 & test_location == 'lab' & test_duration == 2) %>% 
+ ggplot(aes(x = log(aspeed+1)))+geom_density()
+gammarus_data %>% filter(Treatment_conc == 1 & test_location == 'lab' & test_duration == 2) %>% 
+     ggplot(aes(x = log(aspeed+1)))+geom_density()
+gammarus_data %>% filter(Treatment_conc == 10 & test_location == 'lab' & test_duration == 2) %>% 
+     ggplot(aes(x = log(aspeed+1)))+geom_density()
+gammarus_data %>% filter(Treatment_conc == 100 & test_location == 'lab' & test_duration == 2) %>% 
+     ggplot(aes(x = log(aspeed+1)))+geom_density()
+
+x <- gammarus_data %>% filter(Treatment_conc == 0 & test_location == 'lab' & test_duration == 2) 
+y <- gammarus_data %>% filter(Treatment_conc == 100 & test_location == 'lab' & test_duration == 2) 
+ks.test(log(x$aspeed+1), log(y$aspeed+1))
+
+qqnorm(log(x$aspeed+1))
+shapiro.test(log(x$aspeed+1))
+
+fit <- lm()
+
+```
