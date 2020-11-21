@@ -4,7 +4,7 @@
 \alias{assemble_data}
 \title{Assemble all measurements, files, and experiments}
 \usage{
-assemble_data(test_date, test_species)
+assemble_data(test_date, test_species, data_loc = "../data/")
 }
 \arguments{
 \item{test_date}{The date of the experiment}
