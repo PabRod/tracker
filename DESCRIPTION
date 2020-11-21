@@ -20,5 +20,14 @@ Suggests: testthat,
           ggplot2,
           gridExtra,
           latticeExtra,
-          MASS
+          MASS,
+          tidyverse,
+          ggpubr,
+          nlme,
+          multcomp,
+          car,
+          gtable,
+          ggExtra,
+          bookdown,
+          magrittr
 Imports: numDeriv
