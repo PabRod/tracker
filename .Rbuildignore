@@ -3,3 +3,6 @@
 ^data$
 ^scripts$
 ^docs$
+^output$
+^Rprofile\.site\.txt$
+^\.travis\.yml$
